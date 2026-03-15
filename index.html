@@ -3,21 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>ركّب عطرك</title>
+    <title>ركّب عطرك الدحدحي</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #f7f3ed;
-        --surface: #fffdf9;
-        --surface-2: #f2e8dc;
-        --text: #3f342c;
-        --muted: #8a786c;
-        --accent: #b9975b;
-        --accent-soft: #d7c1a0;
-        --rose: #c79ba3;
-        --shadow: 0 16px 40px rgba(74, 52, 39, 0.12);
+        --bg: #f4efe8;
+        --surface: #fffdfa;
+        --surface-soft: #f7f0e6;
+        --text: #3d322b;
+        --muted: #86756a;
+        --gold: #b89461;
+        --gold-soft: #d6be99;
+        --rose: #c49da4;
+        --lavender: #8f7ab8;
+        --border: rgba(184, 148, 97, 0.28);
+        --shadow: 0 16px 48px rgba(72, 55, 41, 0.13);
       }
 
       * { box-sizing: border-box; }
@@ -26,192 +28,270 @@
         margin: 0;
         min-height: 100vh;
         font-family: "Cairo", sans-serif;
-        background:
-          radial-gradient(circle at 15% 12%, #efe1d2 0, transparent 32%),
-          radial-gradient(circle at 88% 10%, #f2e0dd 0, transparent 28%),
-          linear-gradient(155deg, #f8f4ef, #f4ede3 55%, #f9f6f2);
         color: var(--text);
+        background:
+          radial-gradient(circle at 10% 12%, #efe1cf 0, transparent 30%),
+          radial-gradient(circle at 90% 8%, #f2e4dc 0, transparent 25%),
+          linear-gradient(145deg, #f8f5f0, var(--bg) 58%, #f8f4ef);
       }
 
       #root {
         min-height: 100vh;
+        padding: 22px 16px 28px;
+      }
+
+      .shell {
+        width: min(960px, 100%);
+        margin-inline: auto;
+      }
+
+      .brand {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        padding: 18px;
+        margin-bottom: 14px;
+      }
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: var(--lavender);
+        font-size: clamp(1.1rem, 4vw, 1.65rem);
+      }
+
+      .logo-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(143, 122, 184, 0.34);
+        background: rgba(143, 122, 184, 0.08);
       }
 
       .app {
-        width: min(100%, 760px);
-        background: rgba(255, 253, 249, 0.86);
-        border: 1px solid rgba(185, 151, 91, 0.22);
-        box-shadow: var(--shadow);
+        background: rgba(255, 253, 250, 0.94);
         border-radius: 28px;
-        padding: 22px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 4vw, 34px);
+        transition: all 260ms ease;
       }
 
-      .tag {
+      .step { animation: fade 260ms ease; }
+      @keyframes fade {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .progress {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+
+      .eyebrow {
         display: inline-block;
-        color: var(--accent);
-        font-size: 0.86rem;
+        color: var(--gold);
         letter-spacing: 0.08em;
+        font-weight: 700;
         margin-bottom: 6px;
       }
 
       h1, h2, h3, p { margin: 0; }
-      h1 { font-size: clamp(1.8rem, 5vw, 2.35rem); }
-      h2 { font-size: clamp(1.35rem, 4vw, 1.7rem); margin-bottom: 8px; }
+      h1 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 8px; }
+      h2 { font-size: clamp(1.45rem, 5vw, 2rem); margin-bottom: 8px; }
+      h3 { font-size: 1.1rem; }
 
-      .lead { color: var(--muted); margin-top: 10px; line-height: 1.7; }
-      .step { animation: fadeIn 320ms ease; }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
+      .lead {
+        color: var(--muted);
+        line-height: 1.8;
       }
 
       .cards {
         margin-top: 18px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
         gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       }
 
       .card {
-        border: 1px solid rgba(185, 151, 91, 0.28);
-        border-radius: 16px;
-        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
         background: var(--surface);
-        transition: all 0.2s ease;
+        padding: 13px;
+        text-align: right;
         cursor: pointer;
+        transition: all 200ms ease;
       }
 
       .card:hover { transform: translateY(-2px); }
       .card.active {
-        border-color: var(--accent);
-        background: linear-gradient(140deg, #fffefb, var(--surface-2));
-        box-shadow: 0 8px 16px rgba(185, 151, 91, 0.17);
+        border-color: var(--gold);
+        box-shadow: 0 10px 20px rgba(184, 148, 97, 0.18);
+        background: linear-gradient(150deg, #fffefc, var(--surface-soft));
       }
 
-      .card small { display: block; color: var(--muted); margin-bottom: 2px; }
-      .category {
-        font-size: 0.74rem;
-        color: var(--rose);
+      .card small {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .note-name {
+        font-size: 1.16rem;
+        font-weight: 700;
         margin-top: 4px;
+      }
+
+      .category {
+        margin-top: 8px;
+        color: var(--rose);
+        font-size: 0.78rem;
+        font-weight: 700;
       }
 
       .actions {
         margin-top: 18px;
         display: flex;
-        gap: 10px;
         flex-wrap: wrap;
+        gap: 10px;
       }
 
       button {
         border: none;
         border-radius: 999px;
-        padding: 11px 18px;
         font-family: inherit;
-        font-weight: 700;
+        font-weight: 800;
         cursor: pointer;
+        padding: 11px 20px;
       }
 
       .btn-primary {
-        background: linear-gradient(120deg, var(--accent), #c7a975);
         color: #fff;
+        background: linear-gradient(120deg, var(--gold), #c5a070);
       }
 
       .btn-secondary {
-        background: #efe6da;
         color: var(--text);
+        background: #efe5d8;
+      }
+
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
       }
 
       .input {
         width: 100%;
-        margin-top: 12px;
-        padding: 11px 12px;
+        margin-top: 14px;
+        border: 1px solid var(--border);
         border-radius: 12px;
-        border: 1px solid rgba(185, 151, 91, 0.35);
-        background: #fff;
+        padding: 11px 12px;
         font-family: inherit;
       }
 
       .result-grid {
-        margin-top: 16px;
+        margin-top: 14px;
         display: grid;
-        gap: 14px;
+        gap: 12px;
       }
 
       .panel {
         background: #fff;
-        border: 1px solid rgba(185, 151, 91, 0.2);
+        border: 1px solid var(--border);
         border-radius: 16px;
         padding: 14px;
       }
 
-      .recipe-list { margin: 10px 0 0; padding: 0; list-style: none; }
-      .recipe-list li { margin: 6px 0; color: #594b40; }
-
-      .pyramid {
-        display: grid;
-        gap: 8px;
-        margin-top: 10px;
+      .recipe-list {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
       }
 
+      .recipe-list li { margin-bottom: 7px; }
+
+      .pyramid { margin-top: 10px; display: grid; gap: 8px; }
       .layer {
         margin-inline: auto;
-        text-align: center;
-        padding: 8px;
         border-radius: 12px;
         color: #fff;
+        text-align: center;
+        padding: 9px;
         font-size: 0.9rem;
       }
 
-      .layer.top { width: 54%; background: #c8a06c; }
-      .layer.heart { width: 74%; background: #bc8f97; }
-      .layer.base { width: 92%; background: #8b7061; }
+      .layer.top { width: 56%; background: #c69f6a; }
+      .layer.heart { width: 76%; background: #c1939e; }
+      .layer.base { width: 92%; background: #8f7260; }
 
-      .progress {
-        color: var(--muted);
-        font-size: 0.85rem;
-        margin-bottom: 12px;
-      }
+      .hint { margin-top: 9px; color: var(--muted); font-size: 0.86rem; }
 
-      @media (max-width: 520px) {
-        .app { padding: 18px; border-radius: 22px; }
+      @media (min-width: 760px) {
+        .result-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .panel.full { grid-column: 1 / -1; }
       }
     </style>
   </head>
   <body>
     <div id="root"></div>
 
-    <script type="module">
-      import React, { useMemo, useState } from "https://esm.sh/react@18.2.0";
-      import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script>
+      const h = React.createElement;
+      const { useMemo, useState } = React;
+      const { createRoot } = ReactDOM;
 
-      const moods = ["هادئ", "منعش", "أنيق", "جريء"];
-      const baseNotes = [{ id: "musk", name: "Musk" }, { id: "cinnamon", name: "Cinnamon" }];
-      const heartNotes = [{ id: "rose", name: "Rose" }, { id: "jasmine", name: "Jasmine" }];
-      const topNotes = [
-        { id: "bergamot", name: "Bergamot" },
-        { id: "orange", name: "Orange" },
-        { id: "lavender", name: "Lavender" },
+      const moods = [
+        { id: "calm", name: "هادئ", icon: "🕊️", tone: "هادئة" },
+        { id: "fresh", name: "منعش", icon: "🍃", tone: "منعشة" },
+        { id: "elegant", name: "أنيق", icon: "✨", tone: "راقية" },
+        { id: "bold", name: "جريء", icon: "🔥", tone: "جريئة" },
       ];
 
-      const moodText = {
-        "هادئ": "مريح ومتوازن بلمسة ناعمة",
-        "منعش": "مشِرق وحيوي ينعش الحواس",
-        "أنيق": "راقي ونظيف بطابع كلاسيكي",
-        "جريء": "عميق ولافت بثقة واضحة",
+      const baseNotes = [
+        { id: "musk", name: "المسك", icon: "🪵", en: "Musk" },
+        { id: "cinnamon", name: "القرفة", icon: "🌰", en: "Cinnamon" },
+      ];
+
+      const heartNotes = [
+        { id: "rose", name: "الورد", icon: "🌹", en: "Rose" },
+        { id: "jasmine", name: "الياسمين", icon: "🌼", en: "Jasmine" },
+      ];
+
+      const topNotes = [
+        { id: "bergamot", name: "البرغموت", icon: "🍋", en: "Bergamot" },
+        { id: "orange", name: "البرتقال", icon: "🍊", en: "Orange" },
+        { id: "lavender", name: "اللافندر", icon: "💜", en: "Lavender" },
+      ];
+
+      const moodNameMap = {
+        calm: "الصفاء",
+        fresh: "النسيم",
+        elegant: "الوقار",
+        bold: "الهيبة",
       };
 
-      function NoteCard({ label, category, active, onClick }) {
-        return React.createElement(
-          "button",
-          { className: `card ${active ? "active" : ""}`, onClick, type: "button" },
-          React.createElement("small", null, "اختيار"),
-          React.createElement("h3", null, label),
-          React.createElement("div", { className: "category" }, category)
+      const descriptionBits = {
+        calm: "بلمسة هادئة تبعث على الطمأنينة",
+        fresh: "بنَفَس منعش يملأ المكان بالحيوية",
+        elegant: "بطابع أنيق ومتوازن يناسب كل المناسبات",
+        bold: "بحضور جريء يترك انطباعًا لا يُنسى",
+      };
+
+      function NoteCard({ item, category, active, onClick }) {
+        return h("button", { className: "card" + (active ? " active" : ""), onClick, type: "button" },
+          h("small", null, item.icon + " نوتة عطرية"),
+          h("div", { className: "note-name" }, item.name),
+          h("small", null, item.en),
+          h("div", { className: "category" }, category)
         );
       }
 
@@ -223,69 +303,49 @@
         const [top, setTop] = useState("");
         const [customName, setCustomName] = useState("");
 
-        const stepTitles = ["بداية", "المزاج", "القاعدة", "القلب", "الفوّاح", "النتيجة"];
+        const selectedMood = moods.find((m) => m.id === mood);
+        const selectedBase = baseNotes.find((n) => n.id === base);
+        const selectedTop = topNotes.find((n) => n.id === top);
+        const selectedHearts = heartNotes.filter((n) => hearts.includes(n.id));
 
         const suggestedName = useMemo(() => {
-          if (!mood || !base || !top) return "عطر المناسبة";
-          const baseName = baseNotes.find((n) => n.id === base)?.name ?? "Base";
-          const topName = topNotes.find((n) => n.id === top)?.name ?? "Top";
-          return `${mood} · ${baseName} & ${topName}`;
-        }, [mood, base, top]);
+          if (!selectedMood || !selectedTop || !selectedBase) return "تركيبتك الخاصة";
+          return `${moodNameMap[selectedMood.id]} ${selectedTop.name} ولمسة ${selectedBase.name}`;
+        }, [selectedMood, selectedTop, selectedBase]);
 
-        const nameToShow = customName.trim() || suggestedName;
+        const perfumeName = customName.trim() || suggestedName;
 
         const description = useMemo(() => {
-          if (!mood || !base || hearts.length === 0 || !top) return "";
-          const baseName = baseNotes.find((n) => n.id === base)?.name;
-          const topName = topNotes.find((n) => n.id === top)?.name;
-          const heartNames = hearts.map((id) => heartNotes.find((n) => n.id === id)?.name).join(" و ");
-          return `تركيبة ${moodText[mood]} تبدأ بنفحات ${topName}، تتوسطها لمسات ${heartNames}، وترتكز على قاعدة ${baseName} الدافئة.`;
-        }, [mood, base, hearts, top]);
+          if (!selectedMood || !selectedBase || !selectedTop || selectedHearts.length === 0) {
+            return "اختر المكونات لتوليد وصف عطري تلقائي.";
+          }
+          const heartLine = selectedHearts.map((item) => item.name).join(" و");
+          return `${descriptionBits[selectedMood.id]}، تبدأ بنفحات ${selectedTop.name}، يتبعها قلب من ${heartLine}، وترتكز على قاعدة من ${selectedBase.name}.`;
+        }, [selectedMood, selectedBase, selectedTop, selectedHearts]);
 
         const recipe = useMemo(() => {
-          if (!base || hearts.length === 0 || !top) return [];
-          const list = [];
-          list.push({ label: baseNotes.find((n) => n.id === base)?.name + " (القاعدة)", drops: 3 });
-          if (hearts.length === 1) {
-            list.push({ label: heartNotes.find((n) => n.id === hearts[0])?.name + " (القلب)", drops: 5 });
-          } else {
-            list.push({ label: heartNotes.find((n) => n.id === hearts[0])?.name + " (القلب)", drops: 3 });
-            list.push({ label: heartNotes.find((n) => n.id === hearts[1])?.name + " (القلب)", drops: 2 });
+          const items = [];
+          if (selectedBase) items.push({ label: `${selectedBase.name} (القاعدة)`, drops: 3 });
+          if (selectedHearts.length === 1) {
+            items.push({ label: `${selectedHearts[0].name} (القلب)`, drops: 5 });
           }
-          list.push({ label: topNotes.find((n) => n.id === top)?.name + " (الفوّاح)", drops: 2 });
-          return list;
-        }, [base, hearts, top]);
+          if (selectedHearts.length === 2) {
+            items.push({ label: `${selectedHearts[0].name} (القلب)`, drops: 3 });
+            items.push({ label: `${selectedHearts[1].name} (القلب)`, drops: 2 });
+          }
+          if (selectedTop) items.push({ label: `${selectedTop.name} (الفوّاح)`, drops: 2 });
+          return items;
+        }, [selectedBase, selectedHearts, selectedTop]);
 
-        const onToggleHeart = (id) => {
-          setHearts((prev) => {
-            if (prev.includes(id)) return prev.filter((x) => x !== id);
-            if (prev.length >= 2) return prev;
-            return [...prev, id];
-          });
+        const toggleHeart = (id) => {
+          if (hearts.includes(id)) {
+            setHearts(hearts.filter((item) => item !== id));
+            return;
+          }
+          if (hearts.length < 2) setHearts([...hearts, id]);
         };
 
-        const savePerfume = () => {
-          const text = `اسم العطر: ${nameToShow}\nالمزاج: ${mood}\nالوصفة:\n${recipe
-            .map((r) => `- ${r.label}: ${r.drops} قطرات`)
-            .join("\n")}\n\nالوصف: ${description}`;
-          const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "my-perfume.txt";
-          a.click();
-          URL.revokeObjectURL(url);
-        };
-
-        const printLabel = () => {
-          const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>بطاقة العطر</title><style>body{font-family:Cairo,sans-serif;padding:20px}.card{border:1px solid #b9975b;border-radius:14px;padding:16px;max-width:360px}h2{margin:0 0 10px}.muted{color:#7e6d61}.item{margin:4px 0}</style></head><body><div class="card"><h2>${nameToShow}</h2><div class="muted">${description}</div><hr>${recipe.map((r)=>`<div class="item">${r.label}: ${r.drops} قطرات</div>`).join("")}</div><script>window.print();<\/script></body></html>`;
-          const w = window.open("", "_blank", "width=520,height=680");
-          if (!w) return;
-          w.document.write(html);
-          w.document.close();
-        };
-
-        const reset = () => {
+        const goStart = () => {
           setStep(0);
           setMood("");
           setBase("");
@@ -294,118 +354,189 @@
           setCustomName("");
         };
 
-        return React.createElement(
-          "main",
-          { className: "app" },
-          React.createElement("div", { className: "progress" }, `الخطوة: ${stepTitles[step]} (${step + 1}/6)`),
-          step === 0 &&
-            React.createElement(
-              "section",
-              { className: "step" },
-              React.createElement("span", { className: "tag" }, "Perfume Lab"),
-              React.createElement("h1", null, "ركّب عطرك"),
-              React.createElement("p", { className: "lead" }, "اختبر تجربة تركيب عطر شخصية بسرعة وببساطة. اختر المزاج والنفحات، ثم احصل على وصفتك الجاهزة."),
-              React.createElement("div", { className: "actions" },
-                React.createElement("button", { className: "btn-primary", onClick: () => setStep(1) }, "ابدأ التركيب")
-              )
+        const savePerfume = () => {
+          const payload = {
+            perfumeName,
+            mood: selectedMood?.name,
+            base: selectedBase?.name,
+            heart: selectedHearts.map((n) => n.name),
+            top: selectedTop?.name,
+            recipe,
+            createdAt: new Date().toISOString(),
+          };
+          const history = JSON.parse(localStorage.getItem("dahdah-perfumes") || "[]");
+          history.push(payload);
+          localStorage.setItem("dahdah-perfumes", JSON.stringify(history));
+          window.alert("تم حفظ عطرك بنجاح ✨");
+        };
+
+        const printLabel = () => {
+          const labelWindow = window.open("", "_blank", "width=420,height=620");
+          if (!labelWindow) return;
+          labelWindow.document.write(`
+            <html lang="ar" dir="rtl">
+              <head>
+                <meta charset="UTF-8" />
+                <title>ملصق عطري</title>
+                <style>
+                  body { font-family: Cairo, sans-serif; background: #f6f1ea; padding: 24px; }
+                  .label { border: 1px solid #b89461; border-radius: 16px; background: #fff; padding: 16px; }
+                  h2 { margin: 0 0 8px; }
+                  p { margin: 8px 0; line-height: 1.7; }
+                </style>
+              </head>
+              <body>
+                <div class="label">
+                  <h2>${perfumeName}</h2>
+                  <p>${description}</p>
+                  <p><strong>الوصفة:</strong></p>
+                  <ul>${recipe.map((r) => `<li>${r.label}: ${r.drops} قطرات</li>`).join("")}</ul>
+                </div>
+              </body>
+            </html>
+          `);
+          labelWindow.document.close();
+          labelWindow.focus();
+          labelWindow.print();
+        };
+
+        const progressMap = ["(1/6)", "(2/6)", "(3/6)", "(4/6)", "(5/6)", "(6/6)"];
+
+        return h("main", { className: "shell" },
+          h("header", { className: "brand" },
+            h("div", { className: "logo" },
+              h("span", { className: "logo-mark" }, "✿"),
+              h("span", null, "عطور الدحدح")
             ),
-          step === 1 && React.createElement("section", { className: "step" },
-            React.createElement("h2", null, "اختر مزاج العطر"),
-            React.createElement("p", { className: "lead" }, "اختر طابعًا عامًا يوجّه التكوين."),
-            React.createElement("div", { className: "cards" }, moods.map((item) => React.createElement(NoteCard, {
-              key: item,
-              label: item,
-              category: "Mood",
-              active: mood === item,
-              onClick: () => setMood(item),
-            }))),
-            React.createElement("div", { className: "actions" },
-              React.createElement("button", { className: "btn-secondary", onClick: () => setStep(0) }, "رجوع"),
-              React.createElement("button", { className: "btn-primary", onClick: () => setStep(2), disabled: !mood }, "التالي")
-            )
+            h("small", { className: "lead" }, "Perfume Lab")
           ),
-          step === 2 && React.createElement("section", { className: "step" },
-            React.createElement("h2", null, "اختر نفحة القاعدة"),
-            React.createElement("p", { className: "lead" }, "مطلوب اختيار واحد فقط."),
-            React.createElement("div", { className: "cards" }, baseNotes.map((note) => React.createElement(NoteCard, {
-              key: note.id,
-              label: note.name,
-              category: "Base = القاعدة",
-              active: base === note.id,
-              onClick: () => setBase(note.id),
-            }))),
-            React.createElement("div", { className: "actions" },
-              React.createElement("button", { className: "btn-secondary", onClick: () => setStep(1) }, "رجوع"),
-              React.createElement("button", { className: "btn-primary", onClick: () => setStep(3), disabled: !base }, "التالي")
-            )
-          ),
-          step === 3 && React.createElement("section", { className: "step" },
-            React.createElement("h2", null, "اختر نفحات القلب"),
-            React.createElement("p", { className: "lead" }, "اختر نفحة واحدة أو اثنتين."),
-            React.createElement("div", { className: "cards" }, heartNotes.map((note) => React.createElement(NoteCard, {
-              key: note.id,
-              label: note.name,
-              category: "Heart = القلب",
-              active: hearts.includes(note.id),
-              onClick: () => onToggleHeart(note.id),
-            }))),
-            React.createElement("div", { className: "actions" },
-              React.createElement("button", { className: "btn-secondary", onClick: () => setStep(2) }, "رجوع"),
-              React.createElement("button", { className: "btn-primary", onClick: () => setStep(4), disabled: hearts.length < 1 || hearts.length > 2 }, "التالي")
-            )
-          ),
-          step === 4 && React.createElement("section", { className: "step" },
-            React.createElement("h2", null, "اختر نفحة الفوّاح"),
-            React.createElement("p", { className: "lead" }, "مطلوب اختيار واحد فقط."),
-            React.createElement("div", { className: "cards" }, topNotes.map((note) => React.createElement(NoteCard, {
-              key: note.id,
-              label: note.name,
-              category: "Top = الفوّاح",
-              active: top === note.id,
-              onClick: () => setTop(note.id),
-            }))),
-            React.createElement("div", { className: "actions" },
-              React.createElement("button", { className: "btn-secondary", onClick: () => setStep(3) }, "رجوع"),
-              React.createElement("button", { className: "btn-primary", onClick: () => setStep(5), disabled: !top }, "عرض النتيجة")
-            )
-          ),
-          step === 5 && React.createElement("section", { className: "step" },
-            React.createElement("h2", null, nameToShow),
-            React.createElement("p", { className: "lead" }, description),
-            React.createElement("input", {
-              className: "input",
-              placeholder: "اكتب اسمًا مخصصًا لعطرك (اختياري)",
-              value: customName,
-              onChange: (e) => setCustomName(e.target.value),
-            }),
-            React.createElement("div", { className: "result-grid" },
-              React.createElement("div", { className: "panel" },
-                React.createElement("h3", null, "الوصفة النهائية (بالقطرات)"),
-                React.createElement("ul", { className: "recipe-list" }, recipe.map((item) => React.createElement("li", { key: item.label }, `${item.label}: ${item.drops}`)))
-              ),
-              React.createElement("div", { className: "panel" },
-                React.createElement("h3", null, "هرم النفحات"),
-                React.createElement("div", { className: "pyramid" },
-                  React.createElement("div", { className: "layer top" }, `${topNotes.find((n) => n.id === top)?.name} · الفوّاح`),
-                  React.createElement("div", { className: "layer heart" }, `${hearts.map((id) => heartNotes.find((n) => n.id === id)?.name).join(" + ")} · القلب`),
-                  React.createElement("div", { className: "layer base" }, `${baseNotes.find((n) => n.id === base)?.name} · القاعدة`)
+          h("section", { className: "app" },
+            h("div", { className: "step" },
+              h("div", { className: "progress" }, `الخطوة: ${progressMap[step]}`),
+              step === 0 && h("div", { className: "step" },
+                h("span", { className: "eyebrow" }, "ركّب عطرك الدحدحي"),
+                h("h1", null, "صمّم عطرك بنفسك بسهولة وأناقة"),
+                h("p", { className: "lead" }, "اختر المزاج ثم نوتات العطرية الأساسية لتحصل على وصفة دقيقة مناسبة لمحطة التركيب في الحدث."),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-primary", onClick: () => setStep(1) }, "ابدأ التركيب")
                 )
               ),
-              React.createElement("div", { className: "panel" },
-                React.createElement("h3", null, "طريقة التحضير"),
-                React.createElement("p", { className: "lead" }, "أضف الزيوت حسب الوصفة، ثم أكمل بزيت الجوجوبا، وبعدها رجّ الزجاجة بلطف لعدة ثوانٍ.")
+
+              step === 1 && h("div", { className: "step" },
+                h("h2", null, "اختر المزاج"),
+                h("p", { className: "lead" }, "حدد الطابع العطري الذي يناسب شخصيتك."),
+                h("div", { className: "cards" }, moods.map((item) =>
+                  h(NoteCard, {
+                    key: item.id,
+                    item: { ...item, en: "Mood" },
+                    category: "المزاج",
+                    active: mood === item.id,
+                    onClick: () => setMood(item.id),
+                  })
+                )),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-secondary", onClick: () => setStep(0) }, "رجوع"),
+                  h("button", { className: "btn-primary", onClick: () => setStep(2), disabled: !mood }, "التالي")
+                )
+              ),
+
+              step === 2 && h("div", { className: "step" },
+                h("h2", null, "اختر نوتة القاعدة"),
+                h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
+                h("div", { className: "cards" }, baseNotes.map((item) =>
+                  h(NoteCard, {
+                    key: item.id,
+                    item,
+                    category: "Base Note = القاعدة",
+                    active: base === item.id,
+                    onClick: () => setBase(item.id),
+                  })
+                )),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-secondary", onClick: () => setStep(1) }, "رجوع"),
+                  h("button", { className: "btn-primary", onClick: () => setStep(3), disabled: !base }, "التالي")
+                )
+              ),
+
+              step === 3 && h("div", { className: "step" },
+                h("h2", null, "اختر نوتة القلب"),
+                h("p", { className: "lead" }, "اختر نوتة عطرية واحدة أو اثنتين."),
+                h("div", { className: "cards" }, heartNotes.map((item) =>
+                  h(NoteCard, {
+                    key: item.id,
+                    item,
+                    category: "Heart Note = القلب",
+                    active: hearts.includes(item.id),
+                    onClick: () => toggleHeart(item.id),
+                  })
+                )),
+                hearts.length === 2 && h("p", { className: "hint" }, "تم اختيار نوتتين للقلب (سيتم توزيع 3 + 2 قطرات)."),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-secondary", onClick: () => setStep(2) }, "رجوع"),
+                  h("button", { className: "btn-primary", onClick: () => setStep(4), disabled: hearts.length < 1 || hearts.length > 2 }, "التالي")
+                )
+              ),
+
+              step === 4 && h("div", { className: "step" },
+                h("h2", null, "اختر نوتة الفوّاح"),
+                h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
+                h("div", { className: "cards" }, topNotes.map((item) =>
+                  h(NoteCard, {
+                    key: item.id,
+                    item,
+                    category: "Top Note = الفوّاح",
+                    active: top === item.id,
+                    onClick: () => setTop(item.id),
+                  })
+                )),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-secondary", onClick: () => setStep(3) }, "رجوع"),
+                  h("button", { className: "btn-primary", onClick: () => setStep(5), disabled: !top }, "عرض النتيجة")
+                )
+              ),
+
+              step === 5 && h("div", { className: "step" },
+                h("span", { className: "eyebrow" }, "تركيبتك النهائية"),
+                h("h2", null, perfumeName),
+                h("p", { className: "lead" }, description),
+                h("input", {
+                  className: "input",
+                  value: customName,
+                  placeholder: "اكتب اسمًا مخصصًا لعطرك (اختياري)",
+                  onChange: (event) => setCustomName(event.target.value),
+                }),
+                h("div", { className: "result-grid" },
+                  h("article", { className: "panel" },
+                    h("h3", null, "الوصفة النهائية بالقطرات"),
+                    h("ul", { className: "recipe-list" },
+                      recipe.map((item) => h("li", { key: item.label }, `${item.label}: ${item.drops} قطرات`))
+                    )
+                  ),
+                  h("article", { className: "panel" },
+                    h("h3", null, "هرم النوتات العطرية"),
+                    h("div", { className: "pyramid" },
+                      h("div", { className: "layer top" }, `${selectedTop?.name || "-"} · الفوّاح`),
+                      h("div", { className: "layer heart" }, `${selectedHearts.map((x) => x.name).join(" + ") || "-"} · القلب`),
+                      h("div", { className: "layer base" }, `${selectedBase?.name || "-"} · القاعدة`)
+                    )
+                  ),
+                  h("article", { className: "panel full" },
+                    h("h3", null, "طريقة التحضير"),
+                    h("p", { className: "lead" }, "1) أضف الزيوت العطرية حسب الوصفة. 2) أكمل العبوة بزيت الجوجوبا. 3) أغلق الزجاجة ورجّها بلطف لعدة ثوانٍ."),
+                  )
+                ),
+                h("div", { className: "actions" },
+                  h("button", { className: "btn-primary", onClick: savePerfume }, "Save My Perfume"),
+                  h("button", { className: "btn-secondary", onClick: printLabel }, "Print Label"),
+                  h("button", { className: "btn-secondary", onClick: goStart }, "Start Again")
+                )
               )
-            ),
-            React.createElement("div", { className: "actions" },
-              React.createElement("button", { className: "btn-primary", onClick: savePerfume }, "Save My Perfume"),
-              React.createElement("button", { className: "btn-secondary", onClick: printLabel }, "Print Label"),
-              React.createElement("button", { className: "btn-secondary", onClick: reset }, "Start Again")
             )
           )
         );
       }
 
-      createRoot(document.getElementById("root")).render(React.createElement(App));
+      createRoot(document.getElementById("root")).render(h(App));
     </script>
   </body>
 </html>
