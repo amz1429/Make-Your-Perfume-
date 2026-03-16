@@ -241,6 +241,102 @@
 
         .panel.full { grid-column: 1 / -1; }
       }
+
+      /* PDF card */
+      .pdf-card-wrap {
+        position: fixed;
+        inset-inline-start: -99999px;
+        top: 0;
+        width: 794px; /* ~A4 width at 96dpi */
+        background: #f8f3ed;
+        padding: 22px;
+        z-index: -1;
+      }
+
+      .pdf-card {
+        position: relative;
+        min-height: 1123px; /* ~A4 height at 96dpi minus margins */
+        border: 2px solid #b89461;
+        box-shadow: inset 0 0 0 2px rgba(184, 148, 97, 0.34);
+        border-radius: 22px;
+        background: linear-gradient(180deg, #fffdfa, #f9f2e9);
+        padding: 34px;
+        overflow: hidden;
+        color: #3d322b;
+      }
+
+      .pdf-logo {
+        position: absolute;
+        top: 22px;
+        left: 26px;
+        color: #8f7ab8;
+        font-weight: 800;
+        font-size: 24px;
+      }
+
+      .pdf-ornament {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 1px dashed rgba(143, 122, 184, 0.36);
+        opacity: 0.72;
+      }
+
+      .pdf-ornament.top-right { top: -48px; right: -42px; }
+      .pdf-ornament.bottom-left { bottom: -54px; left: -44px; }
+
+      .pdf-ornament::before,
+      .pdf-ornament::after {
+        content: "";
+        position: absolute;
+        inset: 22px;
+        border-radius: 50%;
+        border: 1px solid rgba(143, 122, 184, 0.18);
+      }
+
+      .pdf-title {
+        margin: 66px 0 10px;
+        font-size: 36px;
+        color: #6d4d2d;
+        font-weight: 800;
+      }
+
+      .pdf-desc {
+        margin: 0 0 16px;
+        line-height: 1.95;
+        color: #5f5148;
+        font-size: 19px;
+      }
+
+      .pdf-block {
+        margin-top: 14px;
+        border: 1px solid rgba(184, 148, 97, 0.28);
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .pdf-block-title {
+        margin: 0 0 6px;
+        color: #8f7ab8;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .pdf-list {
+        margin: 0;
+        padding-inline-start: 22px;
+      }
+
+      .pdf-list li {
+        margin-bottom: 6px;
+        line-height: 1.8;
+      }
+
+      .pdf-layers {
+        line-height: 1.9;
+      }
     </style>
   </head>
   <body>
@@ -248,10 +344,11 @@
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
       const h = React.createElement;
-      const { useMemo, useState } = React;
+      const { useMemo, useState, useRef } = React;
       const { createRoot } = ReactDOM;
 
       const baseNotes = [
@@ -395,189 +492,6 @@
         return `تركيبة متوازنة تبدأ بنفحات ${selectedTop.name}، يتبعها قلب من ${heartLine}، وترتكز على قاعدة من ${selectedBase.name}.`;
       }
 
-      function escapeHtml(value) {
-        return String(value)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
-      }
-
-      function exportPerfumeCardPdf(perfumeName, perfumeDescription, notesLine, recipe, layers) {
-        const recipeItems = recipe
-          .map((item) => `<li>${escapeHtml(item.label)}: ${escapeHtml(item.drops)} قطرات</li>`)
-          .join("");
-
-        const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
-        if (!printWindow) {
-          alert("المتصفح منع فتح نافذة التصدير. فعّل النوافذ المنبثقة ثم جرّب مرة أخرى.");
-          return;
-        }
-
-        const cardHtml = `<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>كرت العطر - ${escapeHtml(perfumeName)}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    @page { size: A4; margin: 12mm; }
-
-    body {
-      margin: 0;
-      background: #f8f3ed;
-      font-family: "Cairo", sans-serif;
-      color: #3d322b;
-    }
-
-    .page {
-      padding: 0;
-    }
-
-    .card {
-      position: relative;
-      min-height: calc(100vh - 24mm);
-      border: 2px solid #b89461;
-      box-shadow: inset 0 0 0 2px rgba(184, 148, 97, 0.34);
-      border-radius: 18px;
-      background: linear-gradient(180deg, #fffdfa, #f9f2e9);
-      padding: 30px;
-      overflow: hidden;
-    }
-
-    .logo {
-      position: absolute;
-      top: 20px;
-      left: 24px;
-      color: #8f7ab8;
-      font-weight: 800;
-      font-size: 20px;
-    }
-
-    .ornament {
-      position: absolute;
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      border: 1px dashed rgba(143, 122, 184, 0.36);
-      opacity: 0.7;
-    }
-
-    .ornament.top-right { top: -45px; right: -35px; }
-    .ornament.bottom-left { bottom: -50px; left: -40px; }
-
-    .ornament::before,
-    .ornament::after {
-      content: "";
-      position: absolute;
-      inset: 22px;
-      border-radius: 50%;
-      border: 1px solid rgba(143, 122, 184, 0.18);
-    }
-
-    h1 {
-      margin: 58px 0 8px;
-      font-size: 34px;
-      color: #6d4d2d;
-    }
-
-    .desc {
-      margin: 0 0 14px;
-      line-height: 1.9;
-      color: #5f5148;
-      font-size: 18px;
-    }
-
-    .block {
-      margin-top: 12px;
-      border: 1px solid rgba(184, 148, 97, 0.28);
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .title {
-      margin: 0 0 6px;
-      color: #8f7ab8;
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    ul { margin: 0; padding-inline-start: 20px; }
-    li { margin-bottom: 6px; }
-
-    .layers { line-height: 1.8; }
-  </style>
-</head>
-<body>
-  <article class="card">
-    <div class="ornament top-right"></div>
-    <div class="ornament bottom-left"></div>
-    <div class="logo">✿ عطور الدحدح</div>
-
-    <h1>${escapeHtml(perfumeName)}</h1>
-    <p class="desc">${escapeHtml(perfumeDescription)}</p>
-
-    <section class="block">
-      <h2 class="title">النوتات</h2>
-      <p>${escapeHtml(notesLine || "-")}</p>
-    </section>
-
-    <section class="block">
-      <h2 class="title">الوصفة النهائية بالقطرات</h2>
-      <ul>${recipeItems}</ul>
-    </section>
-
-    <section class="block layers">
-      <h2 class="title">هرم النوتات</h2>
-      <div>الفوّاح: ${escapeHtml(layers.top.join(" + ") || "-")}</div>
-      <div>القلب: ${escapeHtml(layers.heart.join(" + ") || "-")}</div>
-      <div>القاعدة: ${escapeHtml(layers.base.join(" + ") || "-")}</div>
-    </section>
-  </article>
-</body>
-</html>`;
-
-        printWindow.document.open();
-        printWindow.document.write(cardHtml);
-        printWindow.document.close();
-
-        const tryPrint = () => {
-          const doc = printWindow.document;
-
-          const fontsReady = doc.fonts ? doc.fonts.ready.catch(() => {}) : Promise.resolve();
-          const images = Array.from(doc.images || []);
-          const imagePromises = images.map((img) => {
-            if (img.complete) return Promise.resolve();
-            return new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          });
-
-          Promise.all([fontsReady, ...imagePromises]).then(() => {
-            setTimeout(() => {
-              try {
-                printWindow.focus();
-                printWindow.print();
-              } catch (e) {
-                console.error(e);
-              }
-            }, 350);
-          });
-        };
-
-        if (printWindow.document.readyState === "complete") {
-          tryPrint();
-        } else {
-          printWindow.onload = tryPrint;
-        }
-      }
-
       function NoteCard({ item, category, active, onClick }) {
         return h(
           "button",
@@ -601,6 +515,48 @@
         );
       }
 
+      function PdfCard({ perfumeName, perfumeDescription, notesLine, recipe, layers, pdfRef }) {
+        return h(
+          "div",
+          { className: "pdf-card-wrap" },
+          h(
+            "div",
+            { className: "pdf-card", ref: pdfRef },
+            h("div", { className: "pdf-ornament top-right" }),
+            h("div", { className: "pdf-ornament bottom-left" }),
+            h("div", { className: "pdf-logo" }, "✿ عطور الدحدح"),
+            h("h1", { className: "pdf-title" }, perfumeName),
+            h("p", { className: "pdf-desc" }, perfumeDescription),
+            h(
+              "section",
+              { className: "pdf-block" },
+              h("h2", { className: "pdf-block-title" }, "النوتات"),
+              h("p", null, notesLine || "-")
+            ),
+            h(
+              "section",
+              { className: "pdf-block" },
+              h("h2", { className: "pdf-block-title" }, "الوصفة النهائية بالقطرات"),
+              h(
+                "ul",
+                { className: "pdf-list" },
+                recipe.map((item) =>
+                  h("li", { key: item.label }, `${item.label}: ${item.drops} قطرات`)
+                )
+              )
+            ),
+            h(
+              "section",
+              { className: "pdf-block pdf-layers" },
+              h("h2", { className: "pdf-block-title" }, "هرم النوتات"),
+              h("div", null, `الفوّاح: ${layers.top.join(" + ") || "-"}`),
+              h("div", null, `القلب: ${layers.heart.join(" + ") || "-"}`),
+              h("div", null, `القاعدة: ${layers.base.join(" + ") || "-"}`)
+            )
+          )
+        );
+      }
+
       function App() {
         const [step, setStep] = useState(0);
         const [mode, setMode] = useState(null);
@@ -609,6 +565,7 @@
         const [selectedHearts, setSelectedHearts] = useState([]);
         const [selectedTop, setSelectedTop] = useState("");
         const [customName, setCustomName] = useState("");
+        const pdfRef = useRef(null);
 
         const base = baseNotes.find((item) => item.id === selectedBase);
         const top = topNotes.find((item) => item.id === selectedTop);
@@ -690,6 +647,45 @@
           setCustomName("");
         };
 
+        const exportPerfumeCardPdf = async () => {
+          if (!pdfRef.current) return;
+
+          const element = pdfRef.current;
+          const filename = `${perfumeName || "كرت-العطر"}.pdf`;
+
+          try {
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach((btn) => (btn.disabled = true));
+
+            await document.fonts.ready;
+
+            const opt = {
+              margin: 0,
+              filename,
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#f8f3ed",
+                scrollY: 0,
+              },
+              jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait",
+              },
+            };
+
+            await html2pdf().set(opt).from(element).save();
+            buttons.forEach((btn) => (btn.disabled = false));
+          } catch (error) {
+            console.error(error);
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach((btn) => (btn.disabled = false));
+            alert("تعذر تصدير الملف PDF. جرّب مرة أخرى.");
+          }
+        };
+
         const progressMap = ["(1/6)", "(2/6)", "(3/6)", "(4/6)", "(5/6)", "(6/6)"];
 
         return h(
@@ -703,179 +699,191 @@
             h("small", { className: "lead" }, "Perfume Lab")
           ),
           h(
-            "section",
-            { className: "app" },
+            React.Fragment,
+            null,
+            h(PdfCard, {
+              perfumeName,
+              perfumeDescription,
+              notesLine,
+              recipe,
+              layers,
+              pdfRef,
+            }),
             h(
-              "div",
-              { className: "step" },
-              h("div", { className: "progress" }, `الخطوة: ${progressMap[step]}`),
+              "section",
+              { className: "app" },
+              h(
+                "div",
+                { className: "step" },
+                h("div", { className: "progress" }, `الخطوة: ${progressMap[step]}`),
 
-              step === 0 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("span", { className: "eyebrow" }, "ركّب عطرك الدحدحي"),
-                  h("h1", null, "صمّم عطرك بنفسك بسهولة وأناقة"),
-                  h("p", { className: "lead" }, "ابدأ التجربة لاختيار عطر دحدحي جاهز أو اصنع عطرك الدحدحي بنفسك."),
-                  h("div", { className: "actions" }, h("button", { className: "btn-primary", onClick: () => setStep(1) }, "ابدأ"))
-                ),
-
-              step === 1 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("h2", null, "حدد إذا ما كنت تريد عطر دحدحي جاهز أو تصنع عطرك الدحدحي بنفسك"),
-                  h("p", { className: "lead" }, "اختر المسار الذي يناسبك قبل البدء."),
+                step === 0 &&
                   h(
                     "div",
-                    { className: "cards", style: { gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" } },
-                    h(
-                      "button",
-                      {
-                        type: "button",
-                        className: "card" + (mode === "ready" ? " active" : ""),
-                        style: { minHeight: "104px", fontSize: "1.35rem", fontWeight: "800", borderColor: "rgba(143, 122, 184, 0.58)" },
-                        onClick: () => chooseMainPath("ready"),
-                      },
-                      "عطر دحدحي جاهز"
-                    ),
-                    h(
-                      "button",
-                      {
-                        type: "button",
-                        className: "card" + (mode === "custom" ? " active" : ""),
-                        style: { minHeight: "104px", fontSize: "1.35rem", fontWeight: "800", borderColor: "rgba(143, 122, 184, 0.58)" },
-                        onClick: () => chooseMainPath("custom"),
-                      },
-                      "اصنع عطرك الدحدحي بنفسك"
-                    )
+                    { className: "step" },
+                    h("span", { className: "eyebrow" }, "ركّب عطرك الدحدحي"),
+                    h("h1", null, "صمّم عطرك بنفسك بسهولة وأناقة"),
+                    h("p", { className: "lead" }, "ابدأ التجربة لاختيار عطر دحدحي جاهز أو اصنع عطرك الدحدحي بنفسك."),
+                    h("div", { className: "actions" }, h("button", { className: "btn-primary", onClick: () => setStep(1) }, "ابدأ"))
                   ),
-                  mode === "ready" &&
+
+                step === 1 &&
+                  h(
+                    "div",
+                    { className: "step" },
+                    h("h2", null, "حدد إذا ما كنت تريد عطر دحدحي جاهز أو تصنع عطرك الدحدحي بنفسك"),
+                    h("p", { className: "lead" }, "اختر المسار الذي يناسبك قبل البدء."),
                     h(
                       "div",
-                      { className: "cards", style: { marginTop: "16px" } },
-                      readyPerfumes.map((item) => h(ReadyCard, { key: item.id, item, onClick: () => choosePreset(item) }))
-                    ),
-                  h("div", { className: "actions" }, h("button", { className: "btn-secondary", onClick: () => setStep(0) }, "رجوع"))
-                ),
-
-              step === 2 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("h2", null, "اختر نوتة القاعدة"),
-                  h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
-                  h("div", { className: "cards" }, baseNotes.map((item) =>
-                    h(NoteCard, {
-                      key: item.id,
-                      item,
-                      category: "Base Note = القاعدة",
-                      active: selectedBase === item.id,
-                      onClick: () => setSelectedBase(item.id),
-                    })
-                  )),
-                  h("div", { className: "actions" },
-                    h("button", { className: "btn-secondary", onClick: () => setStep(1) }, "رجوع"),
-                    h("button", { className: "btn-primary", onClick: () => setStep(3), disabled: !selectedBase }, "التالي")
-                  )
-                ),
-
-              step === 3 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("h2", null, "اختر نوتة القلب"),
-                  h("p", { className: "lead" }, "اختر نوتة عطرية واحدة أو اثنتين."),
-                  h("div", { className: "cards" }, heartNotes.map((item) =>
-                    h(NoteCard, {
-                      key: item.id,
-                      item,
-                      category: "Heart Note = القلب",
-                      active: selectedHearts.includes(item.id),
-                      onClick: () => toggleHeart(item.id),
-                    })
-                  )),
-                  selectedHearts.length === 2 && !selectedHearts.includes("cinnamon") &&
-                    h("p", { className: "hint" }, "تم اختيار نوتتين للقلب (سيتم توزيع 3 + 2 قطرات)."),
-                  selectedHearts.includes("cinnamon") &&
-                    h("p", { className: "hint" }, "القرفة نوتة قوية في القلب، لذلك تُستخدم بحد أقصى قطرة واحدة."),
-                  selectedHearts.length === 1 && selectedHearts[0] === "cinnamon" &&
-                    h("p", { className: "hint" }, "للحفاظ على توازن الوصفة، أضف نوتة قلب ثانية مع القرفة."),
-                  h("div", { className: "actions" },
-                    h("button", { className: "btn-secondary", onClick: () => setStep(2) }, "رجوع"),
-                    h("button", {
-                      className: "btn-primary",
-                      onClick: () => setStep(4),
-                      disabled: selectedHearts.length < 1 || selectedHearts.length > 2 || (selectedHearts.length === 1 && selectedHearts[0] === "cinnamon"),
-                    }, "التالي")
-                  )
-                ),
-
-              step === 4 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("h2", null, "اختر نوتة الفوّاح"),
-                  h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
-                  h("div", { className: "cards" }, topNotes.map((item) =>
-                    h(NoteCard, {
-                      key: item.id,
-                      item,
-                      category: "Top Note = الفوّاح",
-                      active: selectedTop === item.id,
-                      onClick: () => setSelectedTop(item.id),
-                    })
-                  )),
-                  h("div", { className: "actions" },
-                    h("button", { className: "btn-secondary", onClick: () => setStep(3) }, "رجوع"),
-                    h("button", {
-                      className: "btn-primary",
-                      onClick: () => { setMode("custom"); setSelectedPreset(null); setStep(5); },
-                      disabled: !selectedTop,
-                    }, "عرض النتيجة")
-                  )
-                ),
-
-              step === 5 &&
-                h(
-                  "div",
-                  { className: "step" },
-                  h("span", { className: "eyebrow" }, "تركيبتك النهائية"),
-                  h("h2", null, perfumeName),
-                  h("p", { className: "lead" }, perfumeDescription),
-                  mode === "custom" &&
-                    h("input", {
-                      className: "input",
-                      value: customName,
-                      placeholder: "اكتب اسمًا مخصصًا لعطرك (اختياري)",
-                      onChange: (event) => setCustomName(event.target.value),
-                    }),
-                  h(
-                    "div",
-                    { className: "result-grid" },
-                    h("article", { className: "panel" }, h("h3", null, "النوتات"), h("p", { className: "lead" }, notesLine || "-")),
-                    h("article", { className: "panel" }, h("h3", null, "الوصفة النهائية بالقطرات"),
-                      h("ul", { className: "recipe-list" }, recipe.map((item) => h("li", { key: item.label }, `${item.label}: ${item.drops} قطرات`)))
-                    ),
-                    h("article", { className: "panel" }, h("h3", null, "هرم النوتات العطرية"),
-                      h("div", { className: "pyramid" },
-                        h("div", { className: "layer top" }, `${layers.top.join(" + ") || "-"} · الفوّاح`),
-                        h("div", { className: "layer heart" }, `${layers.heart.join(" + ") || "-"} · القلب`),
-                        h("div", { className: "layer base" }, `${layers.base.join(" + ") || "-"} · القاعدة`)
+                      { className: "cards", style: { gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" } },
+                      h(
+                        "button",
+                        {
+                          type: "button",
+                          className: "card" + (mode === "ready" ? " active" : ""),
+                          style: { minHeight: "104px", fontSize: "1.35rem", fontWeight: "800", borderColor: "rgba(143, 122, 184, 0.58)" },
+                          onClick: () => chooseMainPath("ready"),
+                        },
+                        "عطر دحدحي جاهز"
+                      ),
+                      h(
+                        "button",
+                        {
+                          type: "button",
+                          className: "card" + (mode === "custom" ? " active" : ""),
+                          style: { minHeight: "104px", fontSize: "1.35rem", fontWeight: "800", borderColor: "rgba(143, 122, 184, 0.58)" },
+                          onClick: () => chooseMainPath("custom"),
+                        },
+                        "اصنع عطرك الدحدحي بنفسك"
                       )
                     ),
-                    h("article", { className: "panel full" }, h("h3", null, "طريقة التحضير"),
-                      h("p", { className: "lead" }, "1) أضف الزيوت العطرية حسب الوصفة. 2) أكمل العبوة بزيت الجوجوبا. 3) أغلق الزجاجة ورجّها بلطف لعدة ثوانٍ.")
+                    mode === "ready" &&
+                      h(
+                        "div",
+                        { className: "cards", style: { marginTop: "16px" } },
+                        readyPerfumes.map((item) => h(ReadyCard, { key: item.id, item, onClick: () => choosePreset(item) }))
+                      ),
+                    h("div", { className: "actions" }, h("button", { className: "btn-secondary", onClick: () => setStep(0) }, "رجوع"))
+                  ),
+
+                step === 2 &&
+                  h(
+                    "div",
+                    { className: "step" },
+                    h("h2", null, "اختر نوتة القاعدة"),
+                    h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
+                    h("div", { className: "cards" }, baseNotes.map((item) =>
+                      h(NoteCard, {
+                        key: item.id,
+                        item,
+                        category: "Base Note = القاعدة",
+                        active: selectedBase === item.id,
+                        onClick: () => setSelectedBase(item.id),
+                      })
+                    )),
+                    h("div", { className: "actions" },
+                      h("button", { className: "btn-secondary", onClick: () => setStep(1) }, "رجوع"),
+                      h("button", { className: "btn-primary", onClick: () => setStep(3), disabled: !selectedBase }, "التالي")
                     )
                   ),
-                  h("div", { className: "actions" },
-                    h("button", {
-                      className: "btn-primary",
-                      onClick: () => exportPerfumeCardPdf(perfumeName, perfumeDescription, notesLine, recipe, layers),
-                    }, "تصدير الكرت PDF"),
-                    h("button", { className: "btn-secondary", onClick: goStart }, "Start Again")
+
+                step === 3 &&
+                  h(
+                    "div",
+                    { className: "step" },
+                    h("h2", null, "اختر نوتة القلب"),
+                    h("p", { className: "lead" }, "اختر نوتة عطرية واحدة أو اثنتين."),
+                    h("div", { className: "cards" }, heartNotes.map((item) =>
+                      h(NoteCard, {
+                        key: item.id,
+                        item,
+                        category: "Heart Note = القلب",
+                        active: selectedHearts.includes(item.id),
+                        onClick: () => toggleHeart(item.id),
+                      })
+                    )),
+                    selectedHearts.length === 2 && !selectedHearts.includes("cinnamon") &&
+                      h("p", { className: "hint" }, "تم اختيار نوتتين للقلب (سيتم توزيع 3 + 2 قطرات)."),
+                    selectedHearts.includes("cinnamon") &&
+                      h("p", { className: "hint" }, "القرفة نوتة قوية في القلب، لذلك تُستخدم بحد أقصى قطرة واحدة."),
+                    selectedHearts.length === 1 && selectedHearts[0] === "cinnamon" &&
+                      h("p", { className: "hint" }, "للحفاظ على توازن الوصفة، أضف نوتة قلب ثانية مع القرفة."),
+                    h("div", { className: "actions" },
+                      h("button", { className: "btn-secondary", onClick: () => setStep(2) }, "رجوع"),
+                      h("button", {
+                        className: "btn-primary",
+                        onClick: () => setStep(4),
+                        disabled: selectedHearts.length < 1 || selectedHearts.length > 2 || (selectedHearts.length === 1 && selectedHearts[0] === "cinnamon"),
+                      }, "التالي")
+                    )
+                  ),
+
+                step === 4 &&
+                  h(
+                    "div",
+                    { className: "step" },
+                    h("h2", null, "اختر نوتة الفوّاح"),
+                    h("p", { className: "lead" }, "مطلوب اختيار نوتة عطرية واحدة فقط."),
+                    h("div", { className: "cards" }, topNotes.map((item) =>
+                      h(NoteCard, {
+                        key: item.id,
+                        item,
+                        category: "Top Note = الفوّاح",
+                        active: selectedTop === item.id,
+                        onClick: () => setSelectedTop(item.id),
+                      })
+                    )),
+                    h("div", { className: "actions" },
+                      h("button", { className: "btn-secondary", onClick: () => setStep(3) }, "رجوع"),
+                      h("button", {
+                        className: "btn-primary",
+                        onClick: () => { setMode("custom"); setSelectedPreset(null); setStep(5); },
+                        disabled: !selectedTop,
+                      }, "عرض النتيجة")
+                    )
+                  ),
+
+                step === 5 &&
+                  h(
+                    "div",
+                    { className: "step" },
+                    h("span", { className: "eyebrow" }, "تركيبتك النهائية"),
+                    h("h2", null, perfumeName),
+                    h("p", { className: "lead" }, perfumeDescription),
+                    mode === "custom" &&
+                      h("input", {
+                        className: "input",
+                        value: customName,
+                        placeholder: "اكتب اسمًا مخصصًا لعطرك (اختياري)",
+                        onChange: (event) => setCustomName(event.target.value),
+                      }),
+                    h(
+                      "div",
+                      { className: "result-grid" },
+                      h("article", { className: "panel" }, h("h3", null, "النوتات"), h("p", { className: "lead" }, notesLine || "-")),
+                      h("article", { className: "panel" }, h("h3", null, "الوصفة النهائية بالقطرات"),
+                        h("ul", { className: "recipe-list" }, recipe.map((item) => h("li", { key: item.label }, `${item.label}: ${item.drops} قطرات`)))
+                      ),
+                      h("article", { className: "panel" }, h("h3", null, "هرم النوتات العطرية"),
+                        h("div", { className: "pyramid" },
+                          h("div", { className: "layer top" }, `${layers.top.join(" + ") || "-"} · الفوّاح`),
+                          h("div", { className: "layer heart" }, `${layers.heart.join(" + ") || "-"} · القلب`),
+                          h("div", { className: "layer base" }, `${layers.base.join(" + ") || "-"} · القاعدة`)
+                        )
+                      ),
+                      h("article", { className: "panel full" }, h("h3", null, "طريقة التحضير"),
+                        h("p", { className: "lead" }, "1) أضف الزيوت العطرية حسب الوصفة. 2) أكمل العبوة بزيت الجوجوبا. 3) أغلق الزجاجة ورجّها بلطف لعدة ثوانٍ.")
+                      )
+                    ),
+                    h("div", { className: "actions" },
+                      h("button", {
+                        className: "btn-primary",
+                        onClick: exportPerfumeCardPdf,
+                      }, "تصدير الكرت PDF"),
+                      h("button", { className: "btn-secondary", onClick: goStart }, "Start Again")
+                    )
                   )
-                )
+              )
             )
           )
         );
