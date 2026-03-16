@@ -411,7 +411,7 @@
 
         const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
         if (!printWindow) {
-          alert("المتصفح منع فتح نافذة التصدير. جرّب السماح بالنوافذ المنبثقة.");
+          alert("المتصفح منع فتح نافذة التصدير. فعّل النوافذ المنبثقة ثم جرّب مرة أخرى.");
           return;
         }
 
@@ -420,14 +420,24 @@
 <head>
   <meta charset="UTF-8" />
   <title>كرت العطر - ${escapeHtml(perfumeName)}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     @page { size: A4; margin: 12mm; }
+
     body {
       margin: 0;
       background: #f8f3ed;
       font-family: "Cairo", sans-serif;
       color: #3d322b;
     }
+
+    .page {
+      padding: 0;
+    }
+
     .card {
       position: relative;
       min-height: calc(100vh - 24mm);
@@ -438,6 +448,7 @@
       padding: 30px;
       overflow: hidden;
     }
+
     .logo {
       position: absolute;
       top: 20px;
@@ -446,6 +457,7 @@
       font-weight: 800;
       font-size: 20px;
     }
+
     .ornament {
       position: absolute;
       width: 170px;
@@ -454,26 +466,32 @@
       border: 1px dashed rgba(143, 122, 184, 0.36);
       opacity: 0.7;
     }
+
     .ornament.top-right { top: -45px; right: -35px; }
     .ornament.bottom-left { bottom: -50px; left: -40px; }
-    .ornament::before, .ornament::after {
+
+    .ornament::before,
+    .ornament::after {
       content: "";
       position: absolute;
       inset: 22px;
       border-radius: 50%;
       border: 1px solid rgba(143, 122, 184, 0.18);
     }
+
     h1 {
       margin: 58px 0 8px;
       font-size: 34px;
       color: #6d4d2d;
     }
+
     .desc {
       margin: 0 0 14px;
       line-height: 1.9;
       color: #5f5148;
       font-size: 18px;
     }
+
     .block {
       margin-top: 12px;
       border: 1px solid rgba(184, 148, 97, 0.28);
@@ -481,14 +499,17 @@
       border-radius: 12px;
       padding: 12px;
     }
+
     .title {
       margin: 0 0 6px;
       color: #8f7ab8;
       font-size: 17px;
       font-weight: 700;
     }
+
     ul { margin: 0; padding-inline-start: 20px; }
     li { margin-bottom: 6px; }
+
     .layers { line-height: 1.8; }
   </style>
 </head>
@@ -497,16 +518,20 @@
     <div class="ornament top-right"></div>
     <div class="ornament bottom-left"></div>
     <div class="logo">✿ عطور الدحدح</div>
+
     <h1>${escapeHtml(perfumeName)}</h1>
     <p class="desc">${escapeHtml(perfumeDescription)}</p>
+
     <section class="block">
       <h2 class="title">النوتات</h2>
       <p>${escapeHtml(notesLine || "-")}</p>
     </section>
+
     <section class="block">
       <h2 class="title">الوصفة النهائية بالقطرات</h2>
       <ul>${recipeItems}</ul>
     </section>
+
     <section class="block layers">
       <h2 class="title">هرم النوتات</h2>
       <div>الفوّاح: ${escapeHtml(layers.top.join(" + ") || "-")}</div>
@@ -514,18 +539,43 @@
       <div>القاعدة: ${escapeHtml(layers.base.join(" + ") || "-")}</div>
     </section>
   </article>
-  <script>
-    window.onload = () => {
-      window.print();
-      window.onafterprint = () => window.close();
-    };
-  <\/script>
 </body>
 </html>`;
 
         printWindow.document.open();
         printWindow.document.write(cardHtml);
         printWindow.document.close();
+
+        const tryPrint = () => {
+          const doc = printWindow.document;
+
+          const fontsReady = doc.fonts ? doc.fonts.ready.catch(() => {}) : Promise.resolve();
+          const images = Array.from(doc.images || []);
+          const imagePromises = images.map((img) => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          });
+
+          Promise.all([fontsReady, ...imagePromises]).then(() => {
+            setTimeout(() => {
+              try {
+                printWindow.focus();
+                printWindow.print();
+              } catch (e) {
+                console.error(e);
+              }
+            }, 350);
+          });
+        };
+
+        if (printWindow.document.readyState === "complete") {
+          tryPrint();
+        } else {
+          printWindow.onload = tryPrint;
+        }
       }
 
       function NoteCard({ item, category, active, onClick }) {
